@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Hello React</title>
+</head>
+<body>
+	<div id="app">
+		
+	</div>
+	<script src="//cdn.bootcss.com/react/15.4.2/react.js"></script>
+	<script src="//cdn.bootcss.com/react/15.4.2/react-dom.js"></script>
+	<script>
+        var TextAreaCounter = React.createClass({
+            propTypes:{
+                // 指定props的类型
+                text: React.PropTypes.string
+            },
+            getDefaultProps: function () {
+                // 默认属性
+                return{
+                    text: ''
+                }
+            },
+            getInitialState: function () {
+                return {
+                    text: this.props.text
+                }
+            },
+            _textChange: function (ev) {
+                this.setState({
+                    text: ev.target.value
+                });
+            },
+            render: function () {
+                return React.DOM.div(null,
+                    React.DOM.textarea({
+                        value: this.state.text,
+                        onChange: this._textChange
+                    }),
+                    React.DOM.h3(null, this.state.text.length)
+				);
+            }
+        });
+		ReactDOM.render(
+			React.createElement(TextAreaCounter, {
+			    text: 'xinconan'
+            }),
+			document.getElementById("app")
+		);
+	</script>
+</body>
+</html>
