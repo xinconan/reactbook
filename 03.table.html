@@ -35,6 +35,7 @@
                     data: this.props.initialData,
                     sortby: null, // 排列
                     descending: false, // 升序还是降序
+                    edit: null, // {row: index, cell: index}
                 }
             },
             _sort: function (e) {
@@ -53,6 +54,24 @@
                     descending: descending
                 })
             },
+            // 编辑
+            _showEditor: function (e) {
+                this.setState({edit: {
+                    row: parseInt(e.target.dataset.row, 10),
+                    cell: e.target.cellIndex
+                }})
+            },
+            _save: function (e) {
+                e.preventDefault();
+                // 保存操作
+                var input = e.target.firstChild;
+                var data = this.state.data.slice();
+                data[this.state.edit.row][this.state.edit.cell] = input.value;
+                this.setState({
+                    edit: null, // 完成编辑
+                    data: data,
+                });
+            },
             render: function () {
                 return React.DOM.table(null,
                     React.DOM.thead({onClick: this._sort},
@@ -65,16 +84,31 @@
                             }, this)
                         )
                     ),
-                    React.DOM.tbody(null,
-                        this.state.data.map(function (row, index) {
+                    React.DOM.tbody({onDoubleClick: this._showEditor},
+                        this.state.data.map(function (row, rowidx) {
                             return (
-                                React.DOM.tr({key: index},
+                                React.DOM.tr({key: rowidx},
                                     row.map(function (cell, index) {
-                                        return React.DOM.td({key: index}, cell);
-                                    })
+                                        var content = cell;
+                                        var edit = this.state.edit;
+                                        // 判断是否为待编辑单元格
+                                        if(edit && edit.row === rowidx && edit.cell === index) {
+                                            content = React.DOM.form({onSubmit: this._save},
+                                                React.DOM.input({
+                                                    type: 'text',
+                                                    defaultValue: content
+                                                })
+                                            )
+                                        }
+
+                                        return React.DOM.td({
+                                            key: index,
+                                            'data-row': rowidx
+                                        }, content);
+                                    }, this)
                                 )
                             );
-                        })
+                        }, this)
                     )
 				);
             }
